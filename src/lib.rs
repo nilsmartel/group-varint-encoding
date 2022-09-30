@@ -93,7 +93,9 @@ mod tests {
 
         let dec = UInt32Decompressor { data: &compressed };
 
-        let newdata: Vec<u32> = dec.flatten();
+        let newdata = dec.collect();
+
+        assert_eq!(newdata, data);
     }
 }
 
@@ -102,7 +104,7 @@ pub struct UInt32Decompressor<'a> {
 }
 
 impl<'a> UInt32Decompressor<'a> {
-    pub fn collect(&mut self) -> Vec<u32> {
+    pub fn collect(self) -> Vec<u32> {
         let mut v = Vec::new();
 
         for [a, b, c, d] in self {
@@ -120,7 +122,7 @@ impl<'a> Iterator for UInt32Decompressor<'a> {
     type Item = [u32; 4];
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.data.len() == 0 {
+        if self.data.len() < 5 {
             return None;
         }
 
@@ -139,24 +141,24 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
     match v {
         // GEN TABLE HERE
         0 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
-            let v2 = (data[2] as u32);
-            let v3 = (data[3] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
+            let v2 = data[2] as u32;
+            let v3 = data[3] as u32;
             (v0, v1, v2, v3, 4)
         }
         1 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
-            let v2 = (data[3] as u32);
-            let v3 = (data[4] as u32);
+            let v1 = data[2] as u32;
+            let v2 = data[3] as u32;
+            let v3 = data[4] as u32;
             (v0, v1, v2, v3, 5)
         }
         2 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
-            let v2 = (data[4] as u32);
-            let v3 = (data[5] as u32);
+            let v1 = data[3] as u32;
+            let v2 = data[4] as u32;
+            let v3 = data[5] as u32;
             (v0, v1, v2, v3, 6)
         }
         3 => {
@@ -164,30 +166,30 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
-            let v2 = (data[5] as u32);
-            let v3 = (data[6] as u32);
+            let v1 = data[4] as u32;
+            let v2 = data[5] as u32;
+            let v3 = data[6] as u32;
             (v0, v1, v2, v3, 7)
         }
         4 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
-            let v2 = (data[3] as u32);
-            let v3 = (data[4] as u32);
+            let v2 = data[3] as u32;
+            let v3 = data[4] as u32;
             (v0, v1, v2, v3, 5)
         }
         5 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
             let v1 = (data[2] as u32) | (data[3] as u32) << 8;
-            let v2 = (data[4] as u32);
-            let v3 = (data[5] as u32);
+            let v2 = data[4] as u32;
+            let v3 = data[5] as u32;
             (v0, v1, v2, v3, 6)
         }
         6 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
             let v1 = (data[3] as u32) | (data[4] as u32) << 8;
-            let v2 = (data[5] as u32);
-            let v3 = (data[6] as u32);
+            let v2 = data[5] as u32;
+            let v3 = data[6] as u32;
             (v0, v1, v2, v3, 7)
         }
         7 => {
@@ -196,29 +198,29 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
             let v1 = (data[4] as u32) | (data[5] as u32) << 8;
-            let v2 = (data[6] as u32);
-            let v3 = (data[7] as u32);
+            let v2 = data[6] as u32;
+            let v3 = data[7] as u32;
             (v0, v1, v2, v3, 8)
         }
         8 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
-            let v2 = (data[4] as u32);
-            let v3 = (data[5] as u32);
+            let v2 = data[4] as u32;
+            let v3 = data[5] as u32;
             (v0, v1, v2, v3, 6)
         }
         9 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
             let v1 = (data[2] as u32) | (data[3] as u32) << 8 | (data[4] as u32) << 16;
-            let v2 = (data[5] as u32);
-            let v3 = (data[6] as u32);
+            let v2 = data[5] as u32;
+            let v3 = data[6] as u32;
             (v0, v1, v2, v3, 7)
         }
         10 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
             let v1 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
-            let v2 = (data[6] as u32);
-            let v3 = (data[7] as u32);
+            let v2 = data[6] as u32;
+            let v3 = data[7] as u32;
             (v0, v1, v2, v3, 8)
         }
         11 => {
@@ -227,18 +229,18 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
             let v1 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
-            let v2 = (data[7] as u32);
-            let v3 = (data[8] as u32);
+            let v2 = data[7] as u32;
+            let v3 = data[8] as u32;
             (v0, v1, v2, v3, 9)
         }
         12 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
                 | (data[4] as u32) << 24;
-            let v2 = (data[5] as u32);
-            let v3 = (data[6] as u32);
+            let v2 = data[5] as u32;
+            let v3 = data[6] as u32;
             (v0, v1, v2, v3, 7)
         }
         13 => {
@@ -247,8 +249,8 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[3] as u32) << 8
                 | (data[4] as u32) << 16
                 | (data[5] as u32) << 24;
-            let v2 = (data[6] as u32);
-            let v3 = (data[7] as u32);
+            let v2 = data[6] as u32;
+            let v3 = data[7] as u32;
             (v0, v1, v2, v3, 8)
         }
         14 => {
@@ -257,8 +259,8 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[4] as u32) << 8
                 | (data[5] as u32) << 16
                 | (data[6] as u32) << 24;
-            let v2 = (data[7] as u32);
-            let v3 = (data[8] as u32);
+            let v2 = data[7] as u32;
+            let v3 = data[8] as u32;
             (v0, v1, v2, v3, 9)
         }
         15 => {
@@ -270,29 +272,29 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[5] as u32) << 8
                 | (data[6] as u32) << 16
                 | (data[7] as u32) << 24;
-            let v2 = (data[8] as u32);
-            let v3 = (data[9] as u32);
+            let v2 = data[8] as u32;
+            let v3 = data[9] as u32;
             (v0, v1, v2, v3, 10)
         }
         16 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
             let v2 = (data[2] as u32) | (data[3] as u32) << 8;
-            let v3 = (data[4] as u32);
+            let v3 = data[4] as u32;
             (v0, v1, v2, v3, 5)
         }
         17 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
+            let v1 = data[2] as u32;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8;
-            let v3 = (data[5] as u32);
+            let v3 = data[5] as u32;
             (v0, v1, v2, v3, 6)
         }
         18 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
+            let v1 = data[3] as u32;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8;
-            let v3 = (data[6] as u32);
+            let v3 = data[6] as u32;
             (v0, v1, v2, v3, 7)
         }
         19 => {
@@ -300,30 +302,30 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
+            let v1 = data[4] as u32;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8;
-            let v3 = (data[7] as u32);
+            let v3 = data[7] as u32;
             (v0, v1, v2, v3, 8)
         }
         20 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8;
-            let v3 = (data[5] as u32);
+            let v3 = data[5] as u32;
             (v0, v1, v2, v3, 6)
         }
         21 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
             let v1 = (data[2] as u32) | (data[3] as u32) << 8;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8;
-            let v3 = (data[6] as u32);
+            let v3 = data[6] as u32;
             (v0, v1, v2, v3, 7)
         }
         22 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
             let v1 = (data[3] as u32) | (data[4] as u32) << 8;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8;
-            let v3 = (data[7] as u32);
+            let v3 = data[7] as u32;
             (v0, v1, v2, v3, 8)
         }
         23 => {
@@ -333,28 +335,28 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[3] as u32) << 24;
             let v1 = (data[4] as u32) | (data[5] as u32) << 8;
             let v2 = (data[6] as u32) | (data[7] as u32) << 8;
-            let v3 = (data[8] as u32);
+            let v3 = data[8] as u32;
             (v0, v1, v2, v3, 9)
         }
         24 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8;
-            let v3 = (data[6] as u32);
+            let v3 = data[6] as u32;
             (v0, v1, v2, v3, 7)
         }
         25 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
             let v1 = (data[2] as u32) | (data[3] as u32) << 8 | (data[4] as u32) << 16;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8;
-            let v3 = (data[7] as u32);
+            let v3 = data[7] as u32;
             (v0, v1, v2, v3, 8)
         }
         26 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
             let v1 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
             let v2 = (data[6] as u32) | (data[7] as u32) << 8;
-            let v3 = (data[8] as u32);
+            let v3 = data[8] as u32;
             (v0, v1, v2, v3, 9)
         }
         27 => {
@@ -364,17 +366,17 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[3] as u32) << 24;
             let v1 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
             let v2 = (data[7] as u32) | (data[8] as u32) << 8;
-            let v3 = (data[9] as u32);
+            let v3 = data[9] as u32;
             (v0, v1, v2, v3, 10)
         }
         28 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
                 | (data[4] as u32) << 24;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8;
-            let v3 = (data[7] as u32);
+            let v3 = data[7] as u32;
             (v0, v1, v2, v3, 8)
         }
         29 => {
@@ -384,7 +386,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[4] as u32) << 16
                 | (data[5] as u32) << 24;
             let v2 = (data[6] as u32) | (data[7] as u32) << 8;
-            let v3 = (data[8] as u32);
+            let v3 = data[8] as u32;
             (v0, v1, v2, v3, 9)
         }
         30 => {
@@ -394,7 +396,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[5] as u32) << 16
                 | (data[6] as u32) << 24;
             let v2 = (data[7] as u32) | (data[8] as u32) << 8;
-            let v3 = (data[9] as u32);
+            let v3 = data[9] as u32;
             (v0, v1, v2, v3, 10)
         }
         31 => {
@@ -407,28 +409,28 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[6] as u32) << 16
                 | (data[7] as u32) << 24;
             let v2 = (data[8] as u32) | (data[9] as u32) << 8;
-            let v3 = (data[10] as u32);
+            let v3 = data[10] as u32;
             (v0, v1, v2, v3, 11)
         }
         32 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
             let v2 = (data[2] as u32) | (data[3] as u32) << 8 | (data[4] as u32) << 16;
-            let v3 = (data[5] as u32);
+            let v3 = data[5] as u32;
             (v0, v1, v2, v3, 6)
         }
         33 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
+            let v1 = data[2] as u32;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
-            let v3 = (data[6] as u32);
+            let v3 = data[6] as u32;
             (v0, v1, v2, v3, 7)
         }
         34 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
+            let v1 = data[3] as u32;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
-            let v3 = (data[7] as u32);
+            let v3 = data[7] as u32;
             (v0, v1, v2, v3, 8)
         }
         35 => {
@@ -436,30 +438,30 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
+            let v1 = data[4] as u32;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8 | (data[7] as u32) << 16;
-            let v3 = (data[8] as u32);
+            let v3 = data[8] as u32;
             (v0, v1, v2, v3, 9)
         }
         36 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
-            let v3 = (data[6] as u32);
+            let v3 = data[6] as u32;
             (v0, v1, v2, v3, 7)
         }
         37 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
             let v1 = (data[2] as u32) | (data[3] as u32) << 8;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
-            let v3 = (data[7] as u32);
+            let v3 = data[7] as u32;
             (v0, v1, v2, v3, 8)
         }
         38 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
             let v1 = (data[3] as u32) | (data[4] as u32) << 8;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8 | (data[7] as u32) << 16;
-            let v3 = (data[8] as u32);
+            let v3 = data[8] as u32;
             (v0, v1, v2, v3, 9)
         }
         39 => {
@@ -469,28 +471,28 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[3] as u32) << 24;
             let v1 = (data[4] as u32) | (data[5] as u32) << 8;
             let v2 = (data[6] as u32) | (data[7] as u32) << 8 | (data[8] as u32) << 16;
-            let v3 = (data[9] as u32);
+            let v3 = data[9] as u32;
             (v0, v1, v2, v3, 10)
         }
         40 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
-            let v3 = (data[7] as u32);
+            let v3 = data[7] as u32;
             (v0, v1, v2, v3, 8)
         }
         41 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
             let v1 = (data[2] as u32) | (data[3] as u32) << 8 | (data[4] as u32) << 16;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8 | (data[7] as u32) << 16;
-            let v3 = (data[8] as u32);
+            let v3 = data[8] as u32;
             (v0, v1, v2, v3, 9)
         }
         42 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
             let v1 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
             let v2 = (data[6] as u32) | (data[7] as u32) << 8 | (data[8] as u32) << 16;
-            let v3 = (data[9] as u32);
+            let v3 = data[9] as u32;
             (v0, v1, v2, v3, 10)
         }
         43 => {
@@ -500,17 +502,17 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[3] as u32) << 24;
             let v1 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
             let v2 = (data[7] as u32) | (data[8] as u32) << 8 | (data[9] as u32) << 16;
-            let v3 = (data[10] as u32);
+            let v3 = data[10] as u32;
             (v0, v1, v2, v3, 11)
         }
         44 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
                 | (data[4] as u32) << 24;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8 | (data[7] as u32) << 16;
-            let v3 = (data[8] as u32);
+            let v3 = data[8] as u32;
             (v0, v1, v2, v3, 9)
         }
         45 => {
@@ -520,7 +522,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[4] as u32) << 16
                 | (data[5] as u32) << 24;
             let v2 = (data[6] as u32) | (data[7] as u32) << 8 | (data[8] as u32) << 16;
-            let v3 = (data[9] as u32);
+            let v3 = data[9] as u32;
             (v0, v1, v2, v3, 10)
         }
         46 => {
@@ -530,7 +532,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[5] as u32) << 16
                 | (data[6] as u32) << 24;
             let v2 = (data[7] as u32) | (data[8] as u32) << 8 | (data[9] as u32) << 16;
-            let v3 = (data[10] as u32);
+            let v3 = data[10] as u32;
             (v0, v1, v2, v3, 11)
         }
         47 => {
@@ -543,37 +545,37 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[6] as u32) << 16
                 | (data[7] as u32) << 24;
             let v2 = (data[8] as u32) | (data[9] as u32) << 8 | (data[10] as u32) << 16;
-            let v3 = (data[11] as u32);
+            let v3 = data[11] as u32;
             (v0, v1, v2, v3, 12)
         }
         48 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
             let v2 = (data[2] as u32)
                 | (data[3] as u32) << 8
                 | (data[4] as u32) << 16
                 | (data[5] as u32) << 24;
-            let v3 = (data[6] as u32);
+            let v3 = data[6] as u32;
             (v0, v1, v2, v3, 7)
         }
         49 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
+            let v1 = data[2] as u32;
             let v2 = (data[3] as u32)
                 | (data[4] as u32) << 8
                 | (data[5] as u32) << 16
                 | (data[6] as u32) << 24;
-            let v3 = (data[7] as u32);
+            let v3 = data[7] as u32;
             (v0, v1, v2, v3, 8)
         }
         50 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
+            let v1 = data[3] as u32;
             let v2 = (data[4] as u32)
                 | (data[5] as u32) << 8
                 | (data[6] as u32) << 16
                 | (data[7] as u32) << 24;
-            let v3 = (data[8] as u32);
+            let v3 = data[8] as u32;
             (v0, v1, v2, v3, 9)
         }
         51 => {
@@ -581,22 +583,22 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
+            let v1 = data[4] as u32;
             let v2 = (data[5] as u32)
                 | (data[6] as u32) << 8
                 | (data[7] as u32) << 16
                 | (data[8] as u32) << 24;
-            let v3 = (data[9] as u32);
+            let v3 = data[9] as u32;
             (v0, v1, v2, v3, 10)
         }
         52 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
             let v2 = (data[3] as u32)
                 | (data[4] as u32) << 8
                 | (data[5] as u32) << 16
                 | (data[6] as u32) << 24;
-            let v3 = (data[7] as u32);
+            let v3 = data[7] as u32;
             (v0, v1, v2, v3, 8)
         }
         53 => {
@@ -606,7 +608,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[5] as u32) << 8
                 | (data[6] as u32) << 16
                 | (data[7] as u32) << 24;
-            let v3 = (data[8] as u32);
+            let v3 = data[8] as u32;
             (v0, v1, v2, v3, 9)
         }
         54 => {
@@ -616,7 +618,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[6] as u32) << 8
                 | (data[7] as u32) << 16
                 | (data[8] as u32) << 24;
-            let v3 = (data[9] as u32);
+            let v3 = data[9] as u32;
             (v0, v1, v2, v3, 10)
         }
         55 => {
@@ -629,17 +631,17 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[7] as u32) << 8
                 | (data[8] as u32) << 16
                 | (data[9] as u32) << 24;
-            let v3 = (data[10] as u32);
+            let v3 = data[10] as u32;
             (v0, v1, v2, v3, 11)
         }
         56 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
             let v2 = (data[4] as u32)
                 | (data[5] as u32) << 8
                 | (data[6] as u32) << 16
                 | (data[7] as u32) << 24;
-            let v3 = (data[8] as u32);
+            let v3 = data[8] as u32;
             (v0, v1, v2, v3, 9)
         }
         57 => {
@@ -649,7 +651,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[6] as u32) << 8
                 | (data[7] as u32) << 16
                 | (data[8] as u32) << 24;
-            let v3 = (data[9] as u32);
+            let v3 = data[9] as u32;
             (v0, v1, v2, v3, 10)
         }
         58 => {
@@ -659,7 +661,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[7] as u32) << 8
                 | (data[8] as u32) << 16
                 | (data[9] as u32) << 24;
-            let v3 = (data[10] as u32);
+            let v3 = data[10] as u32;
             (v0, v1, v2, v3, 11)
         }
         59 => {
@@ -672,11 +674,11 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[8] as u32) << 8
                 | (data[9] as u32) << 16
                 | (data[10] as u32) << 24;
-            let v3 = (data[11] as u32);
+            let v3 = data[11] as u32;
             (v0, v1, v2, v3, 12)
         }
         60 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
@@ -685,7 +687,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[6] as u32) << 8
                 | (data[7] as u32) << 16
                 | (data[8] as u32) << 24;
-            let v3 = (data[9] as u32);
+            let v3 = data[9] as u32;
             (v0, v1, v2, v3, 10)
         }
         61 => {
@@ -698,7 +700,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[7] as u32) << 8
                 | (data[8] as u32) << 16
                 | (data[9] as u32) << 24;
-            let v3 = (data[10] as u32);
+            let v3 = data[10] as u32;
             (v0, v1, v2, v3, 11)
         }
         62 => {
@@ -711,7 +713,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[8] as u32) << 8
                 | (data[9] as u32) << 16
                 | (data[10] as u32) << 24;
-            let v3 = (data[11] as u32);
+            let v3 = data[11] as u32;
             (v0, v1, v2, v3, 12)
         }
         63 => {
@@ -727,27 +729,27 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[9] as u32) << 8
                 | (data[10] as u32) << 16
                 | (data[11] as u32) << 24;
-            let v3 = (data[12] as u32);
+            let v3 = data[12] as u32;
             (v0, v1, v2, v3, 13)
         }
         64 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
-            let v2 = (data[2] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
+            let v2 = data[2] as u32;
             let v3 = (data[3] as u32) | (data[4] as u32) << 8;
             (v0, v1, v2, v3, 5)
         }
         65 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
-            let v2 = (data[3] as u32);
+            let v1 = data[2] as u32;
+            let v2 = data[3] as u32;
             let v3 = (data[4] as u32) | (data[5] as u32) << 8;
             (v0, v1, v2, v3, 6)
         }
         66 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
-            let v2 = (data[4] as u32);
+            let v1 = data[3] as u32;
+            let v2 = data[4] as u32;
             let v3 = (data[5] as u32) | (data[6] as u32) << 8;
             (v0, v1, v2, v3, 7)
         }
@@ -756,29 +758,29 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
-            let v2 = (data[5] as u32);
+            let v1 = data[4] as u32;
+            let v2 = data[5] as u32;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8;
             (v0, v1, v2, v3, 8)
         }
         68 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
-            let v2 = (data[3] as u32);
+            let v2 = data[3] as u32;
             let v3 = (data[4] as u32) | (data[5] as u32) << 8;
             (v0, v1, v2, v3, 6)
         }
         69 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
             let v1 = (data[2] as u32) | (data[3] as u32) << 8;
-            let v2 = (data[4] as u32);
+            let v2 = data[4] as u32;
             let v3 = (data[5] as u32) | (data[6] as u32) << 8;
             (v0, v1, v2, v3, 7)
         }
         70 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
             let v1 = (data[3] as u32) | (data[4] as u32) << 8;
-            let v2 = (data[5] as u32);
+            let v2 = data[5] as u32;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8;
             (v0, v1, v2, v3, 8)
         }
@@ -788,28 +790,28 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
             let v1 = (data[4] as u32) | (data[5] as u32) << 8;
-            let v2 = (data[6] as u32);
+            let v2 = data[6] as u32;
             let v3 = (data[7] as u32) | (data[8] as u32) << 8;
             (v0, v1, v2, v3, 9)
         }
         72 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
-            let v2 = (data[4] as u32);
+            let v2 = data[4] as u32;
             let v3 = (data[5] as u32) | (data[6] as u32) << 8;
             (v0, v1, v2, v3, 7)
         }
         73 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
             let v1 = (data[2] as u32) | (data[3] as u32) << 8 | (data[4] as u32) << 16;
-            let v2 = (data[5] as u32);
+            let v2 = data[5] as u32;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8;
             (v0, v1, v2, v3, 8)
         }
         74 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
             let v1 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
-            let v2 = (data[6] as u32);
+            let v2 = data[6] as u32;
             let v3 = (data[7] as u32) | (data[8] as u32) << 8;
             (v0, v1, v2, v3, 9)
         }
@@ -819,17 +821,17 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
             let v1 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
-            let v2 = (data[7] as u32);
+            let v2 = data[7] as u32;
             let v3 = (data[8] as u32) | (data[9] as u32) << 8;
             (v0, v1, v2, v3, 10)
         }
         76 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
                 | (data[4] as u32) << 24;
-            let v2 = (data[5] as u32);
+            let v2 = data[5] as u32;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8;
             (v0, v1, v2, v3, 8)
         }
@@ -839,7 +841,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[3] as u32) << 8
                 | (data[4] as u32) << 16
                 | (data[5] as u32) << 24;
-            let v2 = (data[6] as u32);
+            let v2 = data[6] as u32;
             let v3 = (data[7] as u32) | (data[8] as u32) << 8;
             (v0, v1, v2, v3, 9)
         }
@@ -849,7 +851,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[4] as u32) << 8
                 | (data[5] as u32) << 16
                 | (data[6] as u32) << 24;
-            let v2 = (data[7] as u32);
+            let v2 = data[7] as u32;
             let v3 = (data[8] as u32) | (data[9] as u32) << 8;
             (v0, v1, v2, v3, 10)
         }
@@ -862,27 +864,27 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[5] as u32) << 8
                 | (data[6] as u32) << 16
                 | (data[7] as u32) << 24;
-            let v2 = (data[8] as u32);
+            let v2 = data[8] as u32;
             let v3 = (data[9] as u32) | (data[10] as u32) << 8;
             (v0, v1, v2, v3, 11)
         }
         80 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
             let v2 = (data[2] as u32) | (data[3] as u32) << 8;
             let v3 = (data[4] as u32) | (data[5] as u32) << 8;
             (v0, v1, v2, v3, 6)
         }
         81 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
+            let v1 = data[2] as u32;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8;
             let v3 = (data[5] as u32) | (data[6] as u32) << 8;
             (v0, v1, v2, v3, 7)
         }
         82 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
+            let v1 = data[3] as u32;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8;
             (v0, v1, v2, v3, 8)
@@ -892,13 +894,13 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
+            let v1 = data[4] as u32;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8;
             let v3 = (data[7] as u32) | (data[8] as u32) << 8;
             (v0, v1, v2, v3, 9)
         }
         84 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8;
             let v3 = (data[5] as u32) | (data[6] as u32) << 8;
@@ -929,7 +931,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 10)
         }
         88 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8;
@@ -960,7 +962,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 11)
         }
         92 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
@@ -1003,22 +1005,22 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 12)
         }
         96 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
             let v2 = (data[2] as u32) | (data[3] as u32) << 8 | (data[4] as u32) << 16;
             let v3 = (data[5] as u32) | (data[6] as u32) << 8;
             (v0, v1, v2, v3, 7)
         }
         97 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
+            let v1 = data[2] as u32;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8;
             (v0, v1, v2, v3, 8)
         }
         98 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
+            let v1 = data[3] as u32;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
             let v3 = (data[7] as u32) | (data[8] as u32) << 8;
             (v0, v1, v2, v3, 9)
@@ -1028,13 +1030,13 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
+            let v1 = data[4] as u32;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8 | (data[7] as u32) << 16;
             let v3 = (data[8] as u32) | (data[9] as u32) << 8;
             (v0, v1, v2, v3, 10)
         }
         100 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8;
@@ -1065,7 +1067,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 11)
         }
         104 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
             let v3 = (data[7] as u32) | (data[8] as u32) << 8;
@@ -1096,7 +1098,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 12)
         }
         108 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
@@ -1139,8 +1141,8 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 13)
         }
         112 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
             let v2 = (data[2] as u32)
                 | (data[3] as u32) << 8
                 | (data[4] as u32) << 16
@@ -1150,7 +1152,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         }
         113 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
+            let v1 = data[2] as u32;
             let v2 = (data[3] as u32)
                 | (data[4] as u32) << 8
                 | (data[5] as u32) << 16
@@ -1160,7 +1162,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         }
         114 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
+            let v1 = data[3] as u32;
             let v2 = (data[4] as u32)
                 | (data[5] as u32) << 8
                 | (data[6] as u32) << 16
@@ -1173,7 +1175,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
+            let v1 = data[4] as u32;
             let v2 = (data[5] as u32)
                 | (data[6] as u32) << 8
                 | (data[7] as u32) << 16
@@ -1182,7 +1184,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 11)
         }
         116 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
             let v2 = (data[3] as u32)
                 | (data[4] as u32) << 8
@@ -1225,7 +1227,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 12)
         }
         120 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
             let v2 = (data[4] as u32)
                 | (data[5] as u32) << 8
@@ -1268,7 +1270,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 13)
         }
         124 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
@@ -1323,23 +1325,23 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 14)
         }
         128 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
-            let v2 = (data[2] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
+            let v2 = data[2] as u32;
             let v3 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
             (v0, v1, v2, v3, 6)
         }
         129 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
-            let v2 = (data[3] as u32);
+            let v1 = data[2] as u32;
+            let v2 = data[3] as u32;
             let v3 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
             (v0, v1, v2, v3, 7)
         }
         130 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
-            let v2 = (data[4] as u32);
+            let v1 = data[3] as u32;
+            let v2 = data[4] as u32;
             let v3 = (data[5] as u32) | (data[6] as u32) << 8 | (data[7] as u32) << 16;
             (v0, v1, v2, v3, 8)
         }
@@ -1348,29 +1350,29 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
-            let v2 = (data[5] as u32);
+            let v1 = data[4] as u32;
+            let v2 = data[5] as u32;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8 | (data[8] as u32) << 16;
             (v0, v1, v2, v3, 9)
         }
         132 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
-            let v2 = (data[3] as u32);
+            let v2 = data[3] as u32;
             let v3 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
             (v0, v1, v2, v3, 7)
         }
         133 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
             let v1 = (data[2] as u32) | (data[3] as u32) << 8;
-            let v2 = (data[4] as u32);
+            let v2 = data[4] as u32;
             let v3 = (data[5] as u32) | (data[6] as u32) << 8 | (data[7] as u32) << 16;
             (v0, v1, v2, v3, 8)
         }
         134 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
             let v1 = (data[3] as u32) | (data[4] as u32) << 8;
-            let v2 = (data[5] as u32);
+            let v2 = data[5] as u32;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8 | (data[8] as u32) << 16;
             (v0, v1, v2, v3, 9)
         }
@@ -1380,28 +1382,28 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
             let v1 = (data[4] as u32) | (data[5] as u32) << 8;
-            let v2 = (data[6] as u32);
+            let v2 = data[6] as u32;
             let v3 = (data[7] as u32) | (data[8] as u32) << 8 | (data[9] as u32) << 16;
             (v0, v1, v2, v3, 10)
         }
         136 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
-            let v2 = (data[4] as u32);
+            let v2 = data[4] as u32;
             let v3 = (data[5] as u32) | (data[6] as u32) << 8 | (data[7] as u32) << 16;
             (v0, v1, v2, v3, 8)
         }
         137 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
             let v1 = (data[2] as u32) | (data[3] as u32) << 8 | (data[4] as u32) << 16;
-            let v2 = (data[5] as u32);
+            let v2 = data[5] as u32;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8 | (data[8] as u32) << 16;
             (v0, v1, v2, v3, 9)
         }
         138 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
             let v1 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
-            let v2 = (data[6] as u32);
+            let v2 = data[6] as u32;
             let v3 = (data[7] as u32) | (data[8] as u32) << 8 | (data[9] as u32) << 16;
             (v0, v1, v2, v3, 10)
         }
@@ -1411,17 +1413,17 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
             let v1 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
-            let v2 = (data[7] as u32);
+            let v2 = data[7] as u32;
             let v3 = (data[8] as u32) | (data[9] as u32) << 8 | (data[10] as u32) << 16;
             (v0, v1, v2, v3, 11)
         }
         140 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
                 | (data[4] as u32) << 24;
-            let v2 = (data[5] as u32);
+            let v2 = data[5] as u32;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8 | (data[8] as u32) << 16;
             (v0, v1, v2, v3, 9)
         }
@@ -1431,7 +1433,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[3] as u32) << 8
                 | (data[4] as u32) << 16
                 | (data[5] as u32) << 24;
-            let v2 = (data[6] as u32);
+            let v2 = data[6] as u32;
             let v3 = (data[7] as u32) | (data[8] as u32) << 8 | (data[9] as u32) << 16;
             (v0, v1, v2, v3, 10)
         }
@@ -1441,7 +1443,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[4] as u32) << 8
                 | (data[5] as u32) << 16
                 | (data[6] as u32) << 24;
-            let v2 = (data[7] as u32);
+            let v2 = data[7] as u32;
             let v3 = (data[8] as u32) | (data[9] as u32) << 8 | (data[10] as u32) << 16;
             (v0, v1, v2, v3, 11)
         }
@@ -1454,27 +1456,27 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[5] as u32) << 8
                 | (data[6] as u32) << 16
                 | (data[7] as u32) << 24;
-            let v2 = (data[8] as u32);
+            let v2 = data[8] as u32;
             let v3 = (data[9] as u32) | (data[10] as u32) << 8 | (data[11] as u32) << 16;
             (v0, v1, v2, v3, 12)
         }
         144 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
             let v2 = (data[2] as u32) | (data[3] as u32) << 8;
             let v3 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
             (v0, v1, v2, v3, 7)
         }
         145 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
+            let v1 = data[2] as u32;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8;
             let v3 = (data[5] as u32) | (data[6] as u32) << 8 | (data[7] as u32) << 16;
             (v0, v1, v2, v3, 8)
         }
         146 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
+            let v1 = data[3] as u32;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8 | (data[8] as u32) << 16;
             (v0, v1, v2, v3, 9)
@@ -1484,13 +1486,13 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
+            let v1 = data[4] as u32;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8;
             let v3 = (data[7] as u32) | (data[8] as u32) << 8 | (data[9] as u32) << 16;
             (v0, v1, v2, v3, 10)
         }
         148 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8;
             let v3 = (data[5] as u32) | (data[6] as u32) << 8 | (data[7] as u32) << 16;
@@ -1521,7 +1523,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 11)
         }
         152 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8 | (data[8] as u32) << 16;
@@ -1552,7 +1554,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 12)
         }
         156 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
@@ -1595,22 +1597,22 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 13)
         }
         160 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
             let v2 = (data[2] as u32) | (data[3] as u32) << 8 | (data[4] as u32) << 16;
             let v3 = (data[5] as u32) | (data[6] as u32) << 8 | (data[7] as u32) << 16;
             (v0, v1, v2, v3, 8)
         }
         161 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
+            let v1 = data[2] as u32;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8 | (data[8] as u32) << 16;
             (v0, v1, v2, v3, 9)
         }
         162 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
+            let v1 = data[3] as u32;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
             let v3 = (data[7] as u32) | (data[8] as u32) << 8 | (data[9] as u32) << 16;
             (v0, v1, v2, v3, 10)
@@ -1620,13 +1622,13 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
+            let v1 = data[4] as u32;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8 | (data[7] as u32) << 16;
             let v3 = (data[8] as u32) | (data[9] as u32) << 8 | (data[10] as u32) << 16;
             (v0, v1, v2, v3, 11)
         }
         164 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
             let v3 = (data[6] as u32) | (data[7] as u32) << 8 | (data[8] as u32) << 16;
@@ -1657,7 +1659,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 12)
         }
         168 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
             let v3 = (data[7] as u32) | (data[8] as u32) << 8 | (data[9] as u32) << 16;
@@ -1688,7 +1690,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 13)
         }
         172 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
@@ -1731,8 +1733,8 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 14)
         }
         176 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
             let v2 = (data[2] as u32)
                 | (data[3] as u32) << 8
                 | (data[4] as u32) << 16
@@ -1742,7 +1744,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         }
         177 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
+            let v1 = data[2] as u32;
             let v2 = (data[3] as u32)
                 | (data[4] as u32) << 8
                 | (data[5] as u32) << 16
@@ -1752,7 +1754,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         }
         178 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
+            let v1 = data[3] as u32;
             let v2 = (data[4] as u32)
                 | (data[5] as u32) << 8
                 | (data[6] as u32) << 16
@@ -1765,7 +1767,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
+            let v1 = data[4] as u32;
             let v2 = (data[5] as u32)
                 | (data[6] as u32) << 8
                 | (data[7] as u32) << 16
@@ -1774,7 +1776,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 12)
         }
         180 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
             let v2 = (data[3] as u32)
                 | (data[4] as u32) << 8
@@ -1817,7 +1819,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 13)
         }
         184 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
             let v2 = (data[4] as u32)
                 | (data[5] as u32) << 8
@@ -1860,7 +1862,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 14)
         }
         188 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
@@ -1915,9 +1917,9 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 15)
         }
         192 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
-            let v2 = (data[2] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
+            let v2 = data[2] as u32;
             let v3 = (data[3] as u32)
                 | (data[4] as u32) << 8
                 | (data[5] as u32) << 16
@@ -1926,8 +1928,8 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         }
         193 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
-            let v2 = (data[3] as u32);
+            let v1 = data[2] as u32;
+            let v2 = data[3] as u32;
             let v3 = (data[4] as u32)
                 | (data[5] as u32) << 8
                 | (data[6] as u32) << 16
@@ -1936,8 +1938,8 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         }
         194 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
-            let v2 = (data[4] as u32);
+            let v1 = data[3] as u32;
+            let v2 = data[4] as u32;
             let v3 = (data[5] as u32)
                 | (data[6] as u32) << 8
                 | (data[7] as u32) << 16
@@ -1949,8 +1951,8 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
-            let v2 = (data[5] as u32);
+            let v1 = data[4] as u32;
+            let v2 = data[5] as u32;
             let v3 = (data[6] as u32)
                 | (data[7] as u32) << 8
                 | (data[8] as u32) << 16
@@ -1958,9 +1960,9 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 10)
         }
         196 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
-            let v2 = (data[3] as u32);
+            let v2 = data[3] as u32;
             let v3 = (data[4] as u32)
                 | (data[5] as u32) << 8
                 | (data[6] as u32) << 16
@@ -1970,7 +1972,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         197 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
             let v1 = (data[2] as u32) | (data[3] as u32) << 8;
-            let v2 = (data[4] as u32);
+            let v2 = data[4] as u32;
             let v3 = (data[5] as u32)
                 | (data[6] as u32) << 8
                 | (data[7] as u32) << 16
@@ -1980,7 +1982,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         198 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
             let v1 = (data[3] as u32) | (data[4] as u32) << 8;
-            let v2 = (data[5] as u32);
+            let v2 = data[5] as u32;
             let v3 = (data[6] as u32)
                 | (data[7] as u32) << 8
                 | (data[8] as u32) << 16
@@ -1993,7 +1995,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
             let v1 = (data[4] as u32) | (data[5] as u32) << 8;
-            let v2 = (data[6] as u32);
+            let v2 = data[6] as u32;
             let v3 = (data[7] as u32)
                 | (data[8] as u32) << 8
                 | (data[9] as u32) << 16
@@ -2001,9 +2003,9 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 11)
         }
         200 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
-            let v2 = (data[4] as u32);
+            let v2 = data[4] as u32;
             let v3 = (data[5] as u32)
                 | (data[6] as u32) << 8
                 | (data[7] as u32) << 16
@@ -2013,7 +2015,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         201 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
             let v1 = (data[2] as u32) | (data[3] as u32) << 8 | (data[4] as u32) << 16;
-            let v2 = (data[5] as u32);
+            let v2 = data[5] as u32;
             let v3 = (data[6] as u32)
                 | (data[7] as u32) << 8
                 | (data[8] as u32) << 16
@@ -2023,7 +2025,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         202 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
             let v1 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
-            let v2 = (data[6] as u32);
+            let v2 = data[6] as u32;
             let v3 = (data[7] as u32)
                 | (data[8] as u32) << 8
                 | (data[9] as u32) << 16
@@ -2036,7 +2038,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
             let v1 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
-            let v2 = (data[7] as u32);
+            let v2 = data[7] as u32;
             let v3 = (data[8] as u32)
                 | (data[9] as u32) << 8
                 | (data[10] as u32) << 16
@@ -2044,12 +2046,12 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 12)
         }
         204 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
                 | (data[4] as u32) << 24;
-            let v2 = (data[5] as u32);
+            let v2 = data[5] as u32;
             let v3 = (data[6] as u32)
                 | (data[7] as u32) << 8
                 | (data[8] as u32) << 16
@@ -2062,7 +2064,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[3] as u32) << 8
                 | (data[4] as u32) << 16
                 | (data[5] as u32) << 24;
-            let v2 = (data[6] as u32);
+            let v2 = data[6] as u32;
             let v3 = (data[7] as u32)
                 | (data[8] as u32) << 8
                 | (data[9] as u32) << 16
@@ -2075,7 +2077,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[4] as u32) << 8
                 | (data[5] as u32) << 16
                 | (data[6] as u32) << 24;
-            let v2 = (data[7] as u32);
+            let v2 = data[7] as u32;
             let v3 = (data[8] as u32)
                 | (data[9] as u32) << 8
                 | (data[10] as u32) << 16
@@ -2091,7 +2093,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[5] as u32) << 8
                 | (data[6] as u32) << 16
                 | (data[7] as u32) << 24;
-            let v2 = (data[8] as u32);
+            let v2 = data[8] as u32;
             let v3 = (data[9] as u32)
                 | (data[10] as u32) << 8
                 | (data[11] as u32) << 16
@@ -2099,8 +2101,8 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 13)
         }
         208 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
             let v2 = (data[2] as u32) | (data[3] as u32) << 8;
             let v3 = (data[4] as u32)
                 | (data[5] as u32) << 8
@@ -2110,7 +2112,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         }
         209 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
+            let v1 = data[2] as u32;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8;
             let v3 = (data[5] as u32)
                 | (data[6] as u32) << 8
@@ -2120,7 +2122,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         }
         210 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
+            let v1 = data[3] as u32;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8;
             let v3 = (data[6] as u32)
                 | (data[7] as u32) << 8
@@ -2133,7 +2135,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
+            let v1 = data[4] as u32;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8;
             let v3 = (data[7] as u32)
                 | (data[8] as u32) << 8
@@ -2142,7 +2144,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 11)
         }
         212 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8;
             let v3 = (data[5] as u32)
@@ -2185,7 +2187,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 12)
         }
         216 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8;
             let v3 = (data[6] as u32)
@@ -2228,7 +2230,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 13)
         }
         220 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
@@ -2283,8 +2285,8 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 14)
         }
         224 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
             let v2 = (data[2] as u32) | (data[3] as u32) << 8 | (data[4] as u32) << 16;
             let v3 = (data[5] as u32)
                 | (data[6] as u32) << 8
@@ -2294,7 +2296,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         }
         225 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
+            let v1 = data[2] as u32;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
             let v3 = (data[6] as u32)
                 | (data[7] as u32) << 8
@@ -2304,7 +2306,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         }
         226 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
+            let v1 = data[3] as u32;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
             let v3 = (data[7] as u32)
                 | (data[8] as u32) << 8
@@ -2317,7 +2319,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
+            let v1 = data[4] as u32;
             let v2 = (data[5] as u32) | (data[6] as u32) << 8 | (data[7] as u32) << 16;
             let v3 = (data[8] as u32)
                 | (data[9] as u32) << 8
@@ -2326,7 +2328,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 12)
         }
         228 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
             let v2 = (data[3] as u32) | (data[4] as u32) << 8 | (data[5] as u32) << 16;
             let v3 = (data[6] as u32)
@@ -2369,7 +2371,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 13)
         }
         232 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
             let v2 = (data[4] as u32) | (data[5] as u32) << 8 | (data[6] as u32) << 16;
             let v3 = (data[7] as u32)
@@ -2412,7 +2414,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 14)
         }
         236 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
@@ -2467,8 +2469,8 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 15)
         }
         240 => {
-            let v0 = (data[0] as u32);
-            let v1 = (data[1] as u32);
+            let v0 = data[0] as u32;
+            let v1 = data[1] as u32;
             let v2 = (data[2] as u32)
                 | (data[3] as u32) << 8
                 | (data[4] as u32) << 16
@@ -2481,7 +2483,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         }
         241 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8;
-            let v1 = (data[2] as u32);
+            let v1 = data[2] as u32;
             let v2 = (data[3] as u32)
                 | (data[4] as u32) << 8
                 | (data[5] as u32) << 16
@@ -2494,7 +2496,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
         }
         242 => {
             let v0 = (data[0] as u32) | (data[1] as u32) << 8 | (data[2] as u32) << 16;
-            let v1 = (data[3] as u32);
+            let v1 = data[3] as u32;
             let v2 = (data[4] as u32)
                 | (data[5] as u32) << 8
                 | (data[6] as u32) << 16
@@ -2510,7 +2512,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
                 | (data[1] as u32) << 8
                 | (data[2] as u32) << 16
                 | (data[3] as u32) << 24;
-            let v1 = (data[4] as u32);
+            let v1 = data[4] as u32;
             let v2 = (data[5] as u32)
                 | (data[6] as u32) << 8
                 | (data[7] as u32) << 16
@@ -2522,7 +2524,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 13)
         }
         244 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8;
             let v2 = (data[3] as u32)
                 | (data[4] as u32) << 8
@@ -2577,7 +2579,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 14)
         }
         248 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32) | (data[2] as u32) << 8 | (data[3] as u32) << 16;
             let v2 = (data[4] as u32)
                 | (data[5] as u32) << 8
@@ -2632,7 +2634,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
             (v0, v1, v2, v3, 15)
         }
         252 => {
-            let v0 = (data[0] as u32);
+            let v0 = data[0] as u32;
             let v1 = (data[1] as u32)
                 | (data[2] as u32) << 8
                 | (data[3] as u32) << 16
@@ -2704,7 +2706,7 @@ fn decode_block(v: u8, data: &[u8]) -> (u32, u32, u32, u32, usize) {
 pub fn compress(iter: impl IntoIterator<Item = u32>) -> Vec<u8> {
     let mut buffer = Vec::new();
     let iter = iter.into_iter();
-    for mut chunk in (Chunk { iter, n: 4 }) {
+    for mut chunk in (Chunk { iter }) {
         while chunk.len() < 4 {
             chunk.push(0);
         }
@@ -2757,12 +2759,10 @@ fn var_bits(v: u32) -> u8 {
         } else {
             1
         }
+    } else if v <= 0xffffff {
+        2
     } else {
-        if v <= 0xffffff {
-            2
-        } else {
-            3
-        }
+        3
     }
 }
 
@@ -2771,7 +2771,6 @@ where
     I: Iterator<Item = u32>,
 {
     iter: I,
-    n: u32,
 }
 
 impl<I> Iterator for Chunk<I>
@@ -2781,19 +2780,18 @@ where
     type Item = Vec<u32>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let mut v = Vec::with_capacity(self.n as usize);
-        while let Some(elem) = self.iter.next() {
-            v.push(elem);
+        let a = self.iter.next();
+        let b = self.iter.next();
+        let c = self.iter.next();
+        let d = self.iter.next();
 
-            if v.len() as u32 == self.n {
-                break;
-            }
+        match (a, b, c, d) {
+            (None,_,_,_) => None,
+            (Some(a), None,_,_) => Some(vec![a, 0, 0, 0]),
+            (Some(a),Some(b), None,_) => Some(vec![a, b, 0, 0]),
+            (Some(a),Some(b), Some(c), None) => Some(vec![a, b, c, 0]),
+            (Some(a),Some(b), Some(c), Some(d)) => Some(vec![a, b, c, d]),
+            _ => unreachable!(),
         }
-
-        if v.len() == 0 {
-            return None;
-        }
-
-        Some(v)
     }
 }
