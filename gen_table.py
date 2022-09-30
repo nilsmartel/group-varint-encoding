@@ -41,7 +41,7 @@ for i in range(0, 256):
 
         s += mynum
 
-    s += "(v0, v1, v2, v3)},"
+    s += "(v0, v1, v2, v3, " + str(byteoffset) + ")},"
 
 
     lines.append(s)

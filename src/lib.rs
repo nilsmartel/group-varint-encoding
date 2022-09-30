@@ -11,27 +11,102 @@ mod tests {
     #[test]
     fn tst2() {
         let data = compress([0xff, 0xff, 0xff, 0xff]);
-        assert_eq!(data, [0, 0xff, 0xff, 0xff]);
+        assert_eq!(data, [0, 0xff, 0xff, 0xff, 0xff]);
     }
 
     #[test]
     fn tst3() {
-        let data = compress([0xffff, 0xff, 0xff, 0]);
-        assert_eq!(data, [1, 0xff, 0xff, 0xff, 0]);
+        let data = compress([0xffff, 2, 3, 4]);
+        assert_eq!(data, [1, 0xff, 0xff, 2, 3, 4]);
 
-        let data = compress([0xff, 0xff01, 0xff, 0]);
-        assert_eq!(data, [1 << 2, 0xff, 0xff, 1, 0xff, 0]);
+        let data = compress([0xff, 0xff01, 2, 3]);
+        assert_eq!(data, [1 << 2, 0xff, 1, 0xff, 2, 3]);
 
         let data = compress([0xff, 0xff, 0xff01, 0]);
-        assert_eq!(data, [1 << 4, 0xff, 0xff, 0xff, 3, 0]);
+        assert_eq!(data, [1 << 4, 0xff, 0xff, 1, 0xff, 0]);
 
         let data = compress([0xff, 0xff, 0xff, 0xff03]);
-        assert_eq!(data, [1 << 6, 0xff, 0xff, 0xff, 0xff, 3]);
+        assert_eq!(data, [1 << 6, 0xff, 0xff, 0xff, 3, 0xff]);
+    }
+    #[test]
+    fn tst4() {
+        let data = [
+            732734234u32,
+            213213213,
+            32,
+            2314324,
+            3243,
+            12,
+            32432,
+            5435,
+            4356,
+            57,
+            657,
+            6546,
+            32,
+            4,
+            3245,
+            67,
+            65,
+            432,
+            465,
+            7,
+            643,
+            542,
+            5424,
+            2432,
+            4,
+            324,
+            324,
+            326,
+            765,
+            7534,
+            646546546,
+            45654,
+            6456,
+            546,
+            546,
+            546,
+            546,
+            546,
+            5462,
+            22222222,
+            5637426,
+            5356790,
+            98765432,
+            34567,
+            6544567,
+            6543245,
+            6543,
+            45678,
+            76543,
+            45678,
+            765,
+            3467890,
+            9876,
+            5432,
+            345,
+            0,
+        ];
+
+        let compressed = compress(data.iter().cloned());
+
+        let dec = UInt32Decompressor { data: &compressed };
+
+        let newdata: Vec<u32> = dec.flatten();
     }
 }
 
 pub struct UInt32Decompressor<'a> {
     data: &'a [u8],
+}
+
+impl<'a> UInt32Decompressor<'a> {
+    pub fn collect(&self) -> Vec<u32> {
+        let mut v = Vec::new();
+
+        for b in self.data
+    }
 }
 
 impl<'a> Iterator for UInt32Decompressor<'a> {
@@ -46,6 +121,8 @@ impl<'a> Iterator for UInt32Decompressor<'a> {
         let data = &self.data[1..];
 
         let (a, b, c, d) = decode_block(v, data);
+
+        self.data = self.data[]
 
         Some([a, b, c, d])
     }
