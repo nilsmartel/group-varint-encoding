@@ -44,76 +44,129 @@ mod tests {
         assert_eq!(data, [0, 1, 2, 3, 4, 1, 5, 0xff, 6, 7, 8]);
     }
 
-
     #[test]
     fn tst6() {
         let data = compress([1, 2, 3, 4, 0xaabbccdd, 6, 7, 8]);
-        assert_eq!(data, [
-            // block 1
-            0b00, 1, 2, 3, 4, 
-            // block 2
-            0b11, 0xdd, 0xcc, 0xbb, 0xaa, 6, 7, 8]);
+        assert_eq!(
+            data,
+            [
+                // block 1
+                0b00, 1, 2, 3, 4, // block 2
+                0b11, 0xdd, 0xcc, 0xbb, 0xaa, 6, 7, 8
+            ]
+        );
+    }
+
+    #[test]
+    fn tst7() {
+        let data = [3243, 12, 32432, 5435];
+
+        let compressed = compress(data.iter().cloned());
+
+        let dec = DataBlockIter { data: &compressed };
+
+        let newdata = dec.collect();
+
+        assert_eq!(newdata, data);
+    }
+
+    #[test]
+
+    fn tst8() {
+        let data = [732743432, 213213213, 32, 2314324];
+
+        let compressed = compress(data.iter().cloned());
+
+        let dec = DataBlockIter { data: &compressed };
+
+        let newdata = dec.collect();
+
+        assert_eq!(newdata, data);
+    }
+
+    #[test]
+
+    fn tst9() {
+        let data = [732743432, 213213213, 32, 2314324, 3243, 12, 32432, 5435];
+
+        let compressed = compress(data.iter().cloned());
+
+        let dec = DataBlockIter { data: &compressed };
+
+        let newdata = dec.collect();
+
+        assert_eq!(newdata, data);
+    }
+
+    #[test]
+    fn tst9_1() {
+        let data = [0, 213213213, 32, 2314324, 3243, 12, 32432, 5435];
+
+        let compressed = compress(data.iter().cloned());
+
+        let dec = DataBlockIter { data: &compressed };
+
+        let newdata = dec.collect();
+
+        assert_eq!(newdata, data);
+    }
+
+    #[test]
+    fn tst9_2() {
+        let data = [0, 0, 0, 0, 3243, 12, 32432, 5435];
+
+        let compressed = compress(data.iter().cloned());
+
+        let dec = DataBlockIter { data: &compressed };
+
+        let newdata = dec.collect();
+
+        assert_eq!(newdata, data);
+    }
+
+    #[test]
+    fn tst9_3_compression() {
+        let data = [0, 0, 0, 0, 1, 0, 0, 0];
+
+        let compressed = compress(data.iter().cloned());
+
+        assert_eq!(
+            compressed,
+            vec![
+                // block 1
+                0b00, 0, 0, 0, 0, // block 2
+                0b00, 1, 0, 0, 0,
+            ]
+        );
+        let dec = DataBlockIter { data: &compressed };
+
+        let newdata = dec.collect();
+
+        // a bug occured here, the 1 was at the 2nd index of the block
+        assert_eq!(newdata, data);
+    }
+
+    #[test]
+    fn tst9_4() {
+        let data = [0, 0, 0, 0, 0, 1, 0, 0];
+
+        let compressed = compress(data.iter().cloned());
+
+        let dec = DataBlockIter { data: &compressed };
+
+        let newdata = dec.collect();
+
+        assert_eq!(newdata, data);
     }
 
     #[test]
     fn tst10() {
         let data = [
-            732734234u32,
-            213213213,
-            32,
-            2314324,
-            3243,
-            12,
-            32432,
-            5435,
-            4356,
-            57,
-            657,
-            6546,
-            32,
-            4,
-            3245,
-            67,
-            65,
-            432,
-            465,
-            7,
-            643,
-            542,
-            5424,
-            2432,
-            4,
-            324,
-            324,
-            326,
-            765,
-            7534,
-            646546546,
-            45654,
-            6456,
-            546,
-            546,
-            546,
-            546,
-            546,
-            5462,
-            22222222,
-            5637426,
-            5356790,
-            98765432,
-            34567,
-            6544567,
-            6543245,
-            6543,
-            45678,
-            76543,
-            45678,
-            765,
-            3467890,
-            9876,
-            5432,
-            345,
-            0,
+            327343432, 213213213, 32, 2314324, 3243, 12, 32432, 5435, 4356, 57, 657, 6546, 32, 4,
+            3245, 67, 65, 432, 465, 7, 643, 542, 5424, 2432, 4, 324, 324, 326, 765, 7534,
+            646546546, 45654, 6456, 546, 546, 546, 546, 546, 5462, 22222222, 5637426, 5356790,
+            98765432, 34567, 6544567, 6543245, 6543, 45678, 76543, 45678, 765, 3467890, 9876, 5432,
+            345, 0,
         ];
 
         let compressed = compress(data.iter().cloned());
@@ -149,7 +202,7 @@ impl<'a> Iterator for DataBlockIter<'a> {
     type Item = [u32; 4];
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.data.len() < 5 {
+        if self.data.is_empty() {
             return None;
         }
 
@@ -158,13 +211,13 @@ impl<'a> Iterator for DataBlockIter<'a> {
 
         let (a, b, c, d, offset) = decode_block(v, data);
 
-        self.data = &self.data[offset..];
+        self.data = &data[offset..];
 
         Some([a, b, c, d])
     }
 }
 
-pub fn decompress<'a>(data: &'a [u8]) -> DataBlockIter<'a> {
+pub fn decompress(data: &[u8]) -> DataBlockIter {
     DataBlockIter { data }
 }
 
