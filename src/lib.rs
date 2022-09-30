@@ -44,6 +44,17 @@ mod tests {
         assert_eq!(data, [0, 1, 2, 3, 4, 1, 5, 0xff, 6, 7, 8]);
     }
 
+
+    #[test]
+    fn tst6() {
+        let data = compress([1, 2, 3, 4, 0xaabbccdd, 6, 7, 8]);
+        assert_eq!(data, [
+            // block 1
+            0b00, 1, 2, 3, 4, 
+            // block 2
+            0b11, 0xdd, 0xcc, 0xbb, 0xaa, 6, 7, 8]);
+    }
+
     #[test]
     fn tst10() {
         let data = [
