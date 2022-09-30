@@ -1,5 +1,9 @@
 mod decoder;
+use std::mem::size_of;
+
 use decoder::decode_block;
+mod util;
+use util::*;
 
 #[cfg(test)]
 mod tests {
@@ -270,45 +274,49 @@ fn compress_block(buffer: &mut Vec<u8>, chunk: [u32; 4]) {
     buffer[maskidx] = mask;
 }
 
-fn var_bits(v: u32) -> u8 {
-    if v <= 0xffff {
-        if v <= 0xff {
-            0
-        } else {
-            1
-        }
-    } else if v <= 0xffffff {
-        2
-    } else {
-        3
+use smallvec::SmallVec;
+
+pub struct ListUInt32 {
+    data: Vec<u8>,
+    head: SmallVec<[u32; 3]>,
+}
+
+impl get_size::GetSize for ListUInt32 {
+    fn get_heap_size(&self) -> usize {
+        let smallvecsize = self.head.len() * size_of::<u32>();
+        self.data.len() + smallvecsize
     }
 }
 
-struct Chunk<I>
-where
-    I: Iterator<Item = u32>,
-{
-    iter: I,
+impl ListUInt32 {
+    pub fn new() -> Self {
+        ListUInt32 {
+            data: Vec::new(),
+            head: SmallVec::new(),
+        }
+    }
+
+    pub fn push(&mut self, value: u32) {
+        if self.head.len() == 3 {
+            let chunk = [self.head[0], self.head[1], self.head[2], value];
+            compress_block(&mut self.data, chunk);
+        } else {
+            self.head.push(value);
+        }
+    }
+
+    pub fn collect(&self) -> Vec<u32> {
+        let i = DataBlockIter { data: &self.data };
+        let mut v = i.collect();
+        for i in &self.head {
+            v.push(*i);
+        }
+        v
+    }
 }
 
-impl<I> Iterator for Chunk<I>
-where
-    I: Iterator<Item = u32>,
-{
-    type Item = Vec<u32>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let a = self.iter.next();
-        let b = self.iter.next();
-        let c = self.iter.next();
-        let d = self.iter.next();
-
-        match (a, b, c, d) {
-            (None, _, _, _) => None,
-            (Some(a), None, _, _) => Some(vec![a, 0, 0, 0]),
-            (Some(a), Some(b), None, _) => Some(vec![a, b, 0, 0]),
-            (Some(a), Some(b), Some(c), None) => Some(vec![a, b, c, 0]),
-            (Some(a), Some(b), Some(c), Some(d)) => Some(vec![a, b, c, d]),
-        }
+impl Default for ListUInt32 {
+    fn default() -> Self {
+        Self::new()
     }
 }
