@@ -1,5 +1,5 @@
 [package]
-name = "int-compression"
+name = "int-compression-4-wise"
 version = "0.1.0"
 edition = "2021"
 
