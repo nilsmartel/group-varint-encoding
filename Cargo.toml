@@ -1,6 +1,6 @@
 [package]
 name = "int-compression-4-wise"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 author  = "nilsmartel@yahoo.de"
 description = "Fast algorithm to compress lists if integers in blocks of 4. Appends 0 to blocks, if length of input is not divisable by 4."
