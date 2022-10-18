@@ -1,3 +1,3 @@
-# Int Compression
+# Group Varint Encoding
 
-Implementation of 4 wise null supression
+Compress integers in blocks of 4 using null supression
