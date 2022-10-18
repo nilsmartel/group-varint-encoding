@@ -1,6 +1,4 @@
 mod decoder;
-use std::mem::size_of;
-
 use decoder::decode_block;
 mod util;
 use util::*;
@@ -279,13 +277,6 @@ use smallvec::SmallVec;
 pub struct ListUInt32 {
     data: Vec<u8>,
     head: SmallVec<[u32; 3]>,
-}
-
-impl get_size::GetSize for ListUInt32 {
-    fn get_heap_size(&self) -> usize {
-        let smallvecsize = self.head.len() * size_of::<u32>();
-        self.data.len() + smallvecsize
-    }
 }
 
 impl ListUInt32 {

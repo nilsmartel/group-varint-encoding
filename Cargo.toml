@@ -1,9 +1,9 @@
 [package]
-name = "int-compression-4-wise"
-version = "0.1.1"
+name = "group-varint-encoding"
+version = "0.1.0"
 edition = "2021"
-author  = "nilsmartel@yahoo.de"
-description = "Fast algorithm to compress lists if integers in blocks of 4. Appends 0 to blocks, if length of input is not divisable by 4."
+authors  = ["Nils S. Martel nilsmartel@yahoo.de"]
+description = "Fast algorithm to compress lists if integers in blocks of 4. Appends 0s to blocks, if length of input is not divisable by 4."
 repository = "https://github.com/nilsmartel/int-compression"
 readme = "./README.md"
 license = "MIT OR Apache-2.0"
@@ -14,4 +14,3 @@ categories = ["algorithms", "compression"]
 
 [dependencies]
 smallvec = "1.9.0"                 # 'Small vector' optimization: store up to a small number of items on the stack
-get-size = "0.1.1"           # Determine the size in bytes an object occupies inside RAM.
