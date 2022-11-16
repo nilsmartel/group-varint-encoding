@@ -219,6 +219,14 @@ impl<'a> Iterator for DataBlockIter<'a> {
     }
 }
 
+pub fn decompress_4(data: &[u8]) -> (&[u8], [u32; 4]) {
+    let v = data[0];
+    let data = &data[1..];
+
+    let (a, b, c, d, offset) = decode_block(v, data);
+    (&data[offset..], [a, b, c, d])
+}
+
 pub fn decompress(data: &[u8]) -> DataBlockIter {
     DataBlockIter { data }
 }

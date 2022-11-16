@@ -1,6 +1,6 @@
 [package]
 name = "group-varint-encoding"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors  = ["Nils S. Martel nilsmartel@yahoo.de"]
 description = "Fast algorithm to compress lists if integers in blocks of 4. Appends 0s to blocks, if length of input is not divisable by 4."
