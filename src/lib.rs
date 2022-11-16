@@ -247,7 +247,7 @@ fn to_block(v: Vec<u32>) -> [u32; 4] {
     [v[0], v[1], v[2], v[3]]
 }
 
-fn compress_block(buffer: &mut Vec<u8>, chunk: [u32; 4]) {
+pub fn compress_block(buffer: &mut Vec<u8>, chunk: [u32; 4]) {
     let mut mask = 0; //bits0 | bits1 << 2 | bits2 << 4 | bits3 << 6;
     let maskidx = buffer.len();
     buffer.push(0);
